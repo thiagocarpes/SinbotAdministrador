@@ -21,17 +21,24 @@
         </ion-item>
         <button ion-button (click)="showData()" class="btn">VER RELATÓRIO</button>
     </form>
-
+    <div *ngIf="total > 0">
+        <ion-item>
+            Total: {{ total }}
+        </ion-item>
+        <ion-item>
+            Primeira Tentativa: {{ total }}
+        </ion-item>
+        <ion-item>
+            Segunda Tentativa: {{ segunda }}
+        </ion-item>
+        <ion-item>
+            Terceira Tentativa: {{ terceira }}
+        </ion-item>
+    </div>
     <div>
-        <div *ngIf="showChart" style="display: block">
-            <canvas baseChart [datasets]="barChartData"
-                              [labels]="barChartLabels"
-                              [options]="barChartOptions" 
-                              [legend]="barChartLegend"
-                              [colors]="lineChartColors" 
-                              [chartType]="barChartType" 
-                              (chartHover)="chartHovered($event)"
-                              (chartClick)="chartClicked($event)">
+        <div *ngIf="barChartData.length > 0" style="display: block">
+            <canvas baseChart [datasets]="barChartData" [labels]="barChartLabels" [options]="barChartOptions" [legend]="barChartLegend"
+                [colors]="lineChartColors" [chartType]="barChartType" (chartHover)="chartHovered($event)" (chartClick)="chartClicked($event)">
             </canvas>
         </div>
     </div>

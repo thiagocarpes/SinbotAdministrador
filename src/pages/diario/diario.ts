@@ -22,7 +22,7 @@ export class DiarioPage {
     public barChartType: string = 'bar';
     public barChartLegend: boolean = true;
     
-    public barChartLabels: string[] = [];
+    public barChartLabels: string[];
     public barChartData: any[] = [];
 
     public lineChartColors:Array<any> = [
@@ -41,20 +41,46 @@ export class DiarioPage {
           pointBorderColor: '#fff',
           pointHoverBackgroundColor: '#fff',
           pointHoverBorderColor: 'rgba(77,83,96,1)'
+        },
+        { // segunda coluna
+          backgroundColor: 'rgba(77,83,96,0.2)',
+          borderColor: 'rgba(77,83,96,1)',
+          pointBackgroundColor: 'rgba(77,83,96,1)',
+          pointBorderColor: '#fff',
+          pointHoverBackgroundColor: '#fff',
+          pointHoverBorderColor: 'rgba(77,83,96,1)'
+        },
+        { // segunda coluna
+          backgroundColor: 'rgba(77,83,96,0.2)',
+          borderColor: 'rgba(77,83,96,1)',
+          pointBackgroundColor: 'rgba(77,83,96,1)',
+          pointBorderColor: '#fff',
+          pointHoverBackgroundColor: '#fff',
+          pointHoverBorderColor: 'rgba(77,83,96,1)'
+        },
+        { // segunda coluna
+          backgroundColor: 'rgba(77,83,96,0.2)',
+          borderColor: 'rgba(77,83,96,1)',
+          pointBackgroundColor: 'rgba(77,83,96,1)',
+          pointBorderColor: '#fff',
+          pointHoverBackgroundColor: '#fff',
+          pointHoverBorderColor: 'rgba(77,83,96,1)'
         }
     ];
 
     constructor(public navCtrl: NavController, public navParams: NavParams, public db: AngularFireDatabase) {
-        var results = this.getAll();
-        console.log(results);
-        //this.barChartLabels = results['barChartLabels'];
-        //this.barChartData = results['barChartData'];
+        this.getAll();
     }
 
     getAll() {
         var titulosDias = [];
         var valorDoDia = [];
-        var colunas = [{data:[]}];
+        var primeira = [];
+        var segunda = [];
+        var terceira = [];
+        var chamado = [];
+        var colunas: any[];
+
         this.ref.on('value', resp => {
 
             //essa variavel 'data' retorna tudo o que está no 'chamadosSolucao' no fireBase
@@ -65,20 +91,42 @@ export class DiarioPage {
             var numberAt = "";
 
             //aqui faz o loop de cada registro do 'chamadosSolucao' no fireBase
-            Object.keys(data).forEach(function(key,index){ 
+            Object.keys(data).forEach(function(key,index){
+
                 var dataReg = new Date(data[key].data);
                 var number = (dataReg.getMonth() + 1)+''+(dataReg.getDate() + 1);
+                var chaveMes = (dataReg.getDate() + 1)+'/'+(dataReg.getMonth() + 1);
                 
                 if(i==1){
-                    titulosDias[id] = (dataReg.getDate() + 1)+'/'+(dataReg.getMonth() + 1);
-                    valorDoDia[(dataReg.getDate() + 1)+'/'+(dataReg.getMonth() + 1)] = 1;
+                    titulosDias[id] = chaveMes;
+                    valorDoDia[chaveMes] = 1;
+                    primeira[chaveMes] = 0;
+                    segunda[chaveMes] = 0;
+                    terceira[chaveMes] = 0;
+                    chamado[chaveMes] = 0;
+                    if(data[key].contador==0){ primeira[chaveMes] = 1; }
+                    if(data[key].contador==1){ segunda[chaveMes] = 1; }
+                    if(data[key].contador==2){ terceira[chaveMes] = 1; }
+                    if(data[key].contador>=3){ chamado[chaveMes] = 1; }
                 }else if(number == numberAt){
-                    titulosDias[id] = (dataReg.getDate() + 1)+'/'+(dataReg.getMonth() + 1);
-                    valorDoDia[(dataReg.getDate() + 1)+'/'+(dataReg.getMonth() + 1)]++;
+                    titulosDias[id] = chaveMes;
+                    valorDoDia[chaveMes]++;
+                    if(data[key].contador==0){ primeira[chaveMes]++; }
+                    if(data[key].contador==1){ segunda[chaveMes]++; }
+                    if(data[key].contador==2){ terceira[chaveMes]++; }
+                    if(data[key].contador>=3){ chamado[chaveMes]++; }
                 }else{
                     id++;
-                    titulosDias[id] = (dataReg.getDate() + 1)+'/'+(dataReg.getMonth() + 1);
-                    valorDoDia[(dataReg.getDate() + 1)+'/'+(dataReg.getMonth() + 1)] = 1;
+                    titulosDias[id] = chaveMes;
+                    valorDoDia[chaveMes] = 1;
+                    primeira[chaveMes] = 0;
+                    segunda[chaveMes] = 0;
+                    terceira[chaveMes] = 0;
+                    chamado[chaveMes] = 0;
+                    if(data[key].contador==0){ primeira[chaveMes] = 1; }
+                    if(data[key].contador==1){ segunda[chaveMes] = 1; }
+                    if(data[key].contador==2){ terceira[chaveMes] = 1; }
+                    if(data[key].contador>=3){ chamado[chaveMes] = 1; }
                 }
 
                 numberAt = number;
@@ -86,10 +134,16 @@ export class DiarioPage {
             });
 
             Object.keys(valorDoDia).forEach(function(key,index) {
-                colunas[0]['data'][index] = valorDoDia[key];
+                
+                colunas = [
+                    { data:[9], label: 'Total' },
+                    { data:[2],   label: '1' },
+                    { data:[3],    label: '2' },
+                    { data:[2],   label: '3' },
+                    { data:[1],    label: 'chamados' }
+                ];
             });
-            colunas[0]['label'] = "Sucesso";
-
+            console.log(colunas);
             this.barChartLabels = titulosDias;
             this.barChartData = colunas;
         });
